@@ -1,5 +1,4 @@
 import asyncio
-import re
 from typing import Optional, Union, Any, List, Dict
 import numpy as np
 import json
@@ -94,21 +93,18 @@ async def handle_sentence_output(
     async for display_text, tts_text, actions in output:
         logger.debug(f"🏃 Processing output: '''{tts_text}'''...")
 
-        if translate_engine:
-            if len(re.sub(r'[\s.,!?，。！？\'"』」）】\s]+', "", tts_text)):
-                tts_text = translate_engine.translate(tts_text)
-            logger.info(f"🏃 Text after translation: '''{tts_text}'''...")
-        else:
+        if translate_engine is None:
             logger.debug("🚫 No translation engine available. Skipping translation.")
 
         full_response += display_text.text
-        await tts_manager.speak(
+        await tts_manager.queue_sentence(
             tts_text=tts_text,
             display_text=display_text,
             actions=actions,
             live2d_model=live2d_model,
             tts_engine=tts_engine,
             websocket_send=websocket_send,
+            translate_engine=translate_engine,
         )
     return full_response
 

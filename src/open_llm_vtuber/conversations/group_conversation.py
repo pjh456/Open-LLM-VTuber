@@ -267,6 +267,7 @@ async def handle_group_member_turn(
         group_members=group_members,
     )
 
+    await tts_manager.flush_remaining()
     if tts_manager.task_list:
         await asyncio.gather(*tts_manager.task_list)
         await current_ws_send(json.dumps({"type": "backend-synth-complete"}))

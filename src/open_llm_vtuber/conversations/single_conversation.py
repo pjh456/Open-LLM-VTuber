@@ -137,7 +137,8 @@ async def process_single_conversation(
             # full_response will contain partial response before error
         # --- End processing agent response ---
 
-        # Wait for any pending TTS tasks
+        # Flush the last buffered sentence, then wait for any pending TTS tasks
+        await tts_manager.flush_remaining()
         if tts_manager.task_list:
             await asyncio.gather(*tts_manager.task_list)
             await websocket_send(json.dumps({"type": "backend-synth-complete"}))
