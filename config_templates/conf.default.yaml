@@ -477,8 +477,8 @@ character_config:
 
     translator_config:
       # Like... you speak and read the subtitles in English, and the TTS speaks Japanese or that kind of things
-      translate_audio: False # Warning: you need to deploy DeeplX to use this. Otherwise it's going to crash
-      translate_provider: 'deeplx' # deeplx or tencent
+      translate_audio: False # Warning: make sure the translation engine is configured properly before enabling this. Otherwise it's going to crash
+      translate_provider: 'deeplx' # deeplx, tencent or openai_compatible
 
       deeplx:
         deeplx_target_lang: 'JA'
@@ -493,6 +493,15 @@ character_config:
         region: 'ap-guangzhou'
         source_lang: 'zh'
         target_lang: 'ja'
+
+      # Any OpenAI-compatible chat completions endpoint (e.g. vLLM, llama.cpp server, or a translation LLM hosted elsewhere)
+      openai_compatible:
+        base_url: 'http://localhost:8000/v1'
+        api_key: 'EMPTY'
+        model: 'translation-model'
+        target_lang: 'ja'
+        temperature: 0.0
+        # system_prompt: 'You are a translator. Translate the user's text into Japanese.' # optional, defaults to a generic translation prompt
 
 # Live Streaming Integration
 live_config:

@@ -50,6 +50,48 @@ class TencentConfig(I18nMixin):
     }
 
 
+class OpenAICompatibleConfig(I18nMixin):
+    """Configuration for OpenAI-compatible translation service."""
+
+    base_url: str = Field(
+        ..., alias="base_url", description="Base URL for the OpenAI-compatible API"
+    )
+    api_key: str = Field(
+        "EMPTY", alias="api_key", description="API key for authentication"
+    )
+    model: str = Field(..., alias="model", description="Name of the translation model")
+    target_lang: str = Field(
+        ..., alias="target_lang", description="Target language for translation"
+    )
+    temperature: float = Field(
+        0.0, alias="temperature", description="Sampling temperature for the model"
+    )
+    system_prompt: str | None = Field(
+        None,
+        alias="system_prompt",
+        description="Custom system prompt (optional, defaults to a generic translation prompt)",
+    )
+
+    DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
+        "base_url": Description(
+            en="Base URL for the OpenAI-compatible API",
+            zh="OpenAI 兼容 API 的基础 URL",
+        ),
+        "api_key": Description(en="API key for authentication", zh="API 认证密钥"),
+        "model": Description(en="Name of the translation model", zh="翻译模型的名称"),
+        "target_lang": Description(
+            en="Target language for translation", zh="翻译的目标语言"
+        ),
+        "temperature": Description(
+            en="Sampling temperature for the model", zh="模型的采样温度"
+        ),
+        "system_prompt": Description(
+            en="Custom system prompt (optional)",
+            zh="自定义系统提示词（可选）",
+        ),
+    }
+
+
 # --- Main TranslatorConfig model ---
 
 
@@ -57,11 +99,14 @@ class TranslatorConfig(I18nMixin):
     """Configuration for translation services."""
 
     translate_audio: bool = Field(..., alias="translate_audio")
-    translate_provider: Literal["deeplx", "tencent"] = Field(
+    translate_provider: Literal["deeplx", "tencent", "openai_compatible"] = Field(
         ..., alias="translate_provider"
     )
     deeplx: Optional[DeepLXConfig] = Field(None, alias="deeplx")
     tencent: Optional[TencentConfig] = Field(None, alias="tencent")
+    openai_compatible: Optional[OpenAICompatibleConfig] = Field(
+        None, alias="openai_compatible"
+    )
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "translate_audio": Description(
@@ -76,6 +121,10 @@ class TranslatorConfig(I18nMixin):
         ),
         "tencent": Description(
             en="Configuration for TenCent translation service", zh="腾讯 翻译服务配置"
+        ),
+        "openai_compatible": Description(
+            en="Configuration for OpenAI-compatible translation service",
+            zh="OpenAI 兼容翻译服务配置",
         ),
     }
 
@@ -92,6 +141,13 @@ class TranslatorConfig(I18nMixin):
             elif translate_provider == "tencent" and values.tencent is None:
                 raise ValueError(
                     "Tencent configuration must be provided when translate_audio is True and translate_provider is 'tencent'"
+                )
+            elif (
+                translate_provider == "openai_compatible"
+                and values.openai_compatible is None
+            ):
+                raise ValueError(
+                    "OpenAI-compatible configuration must be provided when translate_audio is True and translate_provider is 'openai_compatible'"
                 )
 
         return values

@@ -473,7 +473,7 @@ character_config:
     translator_config:
       # 比如...你说话并阅读英语字幕，而 TTS 说日语之类的
       translate_audio: False # 警告：请确保翻译引擎配置成功再开启此选项，否则会翻译失败
-      translate_provider: 'deeplx' # 翻译提供商, 目前支持 deeplx 或 tencent
+      translate_provider: 'deeplx' # 翻译提供商, 目前支持 deeplx、tencent 或 openai_compatible
 
       deeplx:
         deeplx_target_lang: 'JA'
@@ -489,6 +489,15 @@ character_config:
         region: 'ap-guangzhou'
         source_lang: 'zh'
         target_lang: 'ja'
+
+      # 任意 OpenAI 兼容的 chat completions 接口（例如 vLLM、llama.cpp server，或其他托管的翻译模型）
+      openai_compatible:
+        base_url: 'http://localhost:8000/v1'
+        api_key: 'EMPTY'
+        model: 'translation-model'
+        target_lang: 'ja'
+        temperature: 0.0
+        # system_prompt: '你是一个翻译。请将用户的文本翻译成日语。' # 可选，默认使用通用的翻译提示词
 
 # 直播平台集成
 live_config:
